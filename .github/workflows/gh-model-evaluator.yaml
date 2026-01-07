@@ -1,0 +1,60 @@
+name: Sovereign Protocol Model Audit
+run-name: Audit triggered by Root Admin @adel-dayem
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'specs/**'
+      - 'registry/**'
+  schedule:
+    - cron: '0 12 * * *' # Runs daily at 12:00 UTC
+  workflow_dispatch: # Allows Adel to trigger an audit manually
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  compliance_audit:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # The list of models the registry currently monitors
+        model: [ "openai/gpt-5", "google/gemini-3-pro", "anthropic/claude-4" ]
+
+    steps:
+      - name: Checkout Sovereign Infrastructure
+        uses: actions/checkout@v4
+
+      - name: Setup Python Environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Audit Dependencies
+        run: |
+          pip install numpy opencv-python requests
+          # In 2026, we use the GitHub Models SDK
+          pip install azure-ai-inference 
+
+      - name: Execute Sovereign Bench (DP-1.0)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MODEL_API_KEY: ${{ secrets.MODEL_API_KEY }}
+        run: |
+          # Runs the audit script against the specific matrix model
+          python scripts/run_eval.py --model ${{ matrix.model }} --standard "1.0_CONSTANT"
+
+      - name: Update Public Ledger
+        run: |
+          # Logic to parse results and inject them into AUDIT_LOG.md
+          python scripts/update_ledger.py --model ${{ matrix.model }}
+
+      - name: Commit Audit Results
+        run: |
+          git config --global user.name "Sovereign-Root-Bot"
+          git config --global user.email "bot@adeldayem.com"
+          git add AUDIT_LOG.md
+          git commit -m "Automated Audit: ${{ matrix.model }} Compliance Updated"
+          git push
