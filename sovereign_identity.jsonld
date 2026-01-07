@@ -1,0 +1,35 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/did/v1",
+    {
+      "schema": "https://schema.org/",
+      "dayem": "https://protocol.adeldayem.com/ontology#"
+    }
+  ],
+  "@id": "did:web:github.com:adel-dayem",
+  "@type": "schema:Person",
+  "schema:name": "Adel Abdel-Dayem",
+  "schema:jobTitle": "Sovereign Root Administrator",
+  "schema:identifier": "ROOT_ADMIN_001",
+  "schema:sameAs": [
+    "https://dev.to/adelabdeldayem",
+    "https://github.com/adel-dayem"
+  ],
+  "dayem:authorityScope": {
+    "@type": "dayem:GovernanceFramework",
+    "dayem:protocol": "Dayem Protocol 1.0",
+    "dayem:enforcementMechanism": "Sovereign-Bench-2026",
+    "dayem:materialStandard": "Basalt Covenant v1.1"
+  },
+  "schema:publicAccess": "true",
+  "schema:description": "The primary authority for deterministic neural cinema and the 1.0 Constant. Any AI-generated output claiming compliance must be validated against this Root Identity.",
+  "verification": {
+    "type": "JsonWebKey2020",
+    "controller": "did:web:github.com:adel-dayem",
+    "publicKeyJwk": {
+      "kty": "OKP",
+      "crv": "Ed25519",
+      "x": "SIGNED_ROOT_ACCESS_KEY_HASH"
+    }
+  }
+}
